@@ -110,11 +110,19 @@ func EditBoards(tasks task.Storage, args []string) error {
         return nil
     }
 
+    deltaMode := false
     var ids []int
-    var boards []string
+    var boards, removeBoards []string
     for _, arg := range args {
-        if strings.HasPrefix(arg, "@") {
-            boards = append(boards, strings.TrimPrefix(arg, "@"))
+        if !deltaMode && (strings.HasPrefix(arg, "+") || strings.HasPrefix(arg, "-")) {
+            deltaMode = true
+        }
+
+        if strings.HasPrefix(arg, "@") || strings.HasPrefix(arg, "+@") {
+            board := strings.TrimPrefix(arg, "+")
+            boards = append(boards, strings.TrimPrefix(board, "@"))
+        } else if strings.HasPrefix(arg, "-@") {
+            removeBoards = append(removeBoards, strings.TrimPrefix(arg, "-@"))
         } else {
             id, err := strconv.Atoi(arg)
             if err == nil && tasks.ContainsTask(id) {
@@ -128,11 +136,31 @@ func EditBoards(tasks task.Storage, args []string) error {
     }
 
     for _, id := range ids {
-        tasks.GetTask(id).Boards = boards
+        task := tasks.GetTask(id)
+        if deltaMode {
+            task.Boards = append(task.Boards, boards...)
+            for _, remove := range removeBoards {
+                for index, board := range task.Boards {
+                    if board == remove {
+                        task.Boards = append(task.Boards[:index], task.Boards[index + 1:]...)
+                        break
+                    }
+                }
+            }
+        } else {
+            task.Boards = boards
+        }
     }
 
     idsDisplay := strings.Join(surround(stringify(ids), style.Muted, style.Reset), ", ")
-    boardsDisplay := strings.Join(surround(boards, style.Board + "@", style.Reset), ", ")
+    var boardsDisplay string
+    if deltaMode {
+        greenBoards := surround(boards, style.Add + "+@", style.Reset)
+        redBoards := surround(removeBoards, style.Remove + "-@", style.Reset)
+        boardsDisplay = strings.Join(append(greenBoards, redBoards...), ", ")
+    } else {
+        boardsDisplay = strings.Join(surround(boards, style.Board + "@", style.Reset), ", ")
+    }
     fmt.Printf("Changed boards of items [ %s ] to [ %s ]\n", idsDisplay, boardsDisplay)
     return tasks.Save()
 }
