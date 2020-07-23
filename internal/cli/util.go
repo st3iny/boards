@@ -19,3 +19,24 @@ func surround(slice []string, prefix, suffix string) []string {
     }
     return items
 }
+
+// checks wheter a string slice contains a string
+func contains(slice []string, str string) bool {
+    for _, element := range slice {
+        if element == str {
+            return true
+        }
+    }
+    return false
+}
+
+// remove duplications from string slice
+func unique(slice []string) []string {
+    var uniqueSlice []string
+    for _, element := range slice {
+        if !contains(uniqueSlice, element) {
+            uniqueSlice = append(uniqueSlice, element)
+        }
+    }
+    return uniqueSlice
+}

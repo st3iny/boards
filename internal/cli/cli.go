@@ -26,10 +26,11 @@ func BoardView(tasks task.Storage) {
             pending++
         }
 
-        if len(item.Boards) == 0 {
+        boards := unique(item.Boards)
+        if len(boards) == 0 {
             boardMap.Put(task.DefaultBoard, item)
         } else {
-            for _, board := range item.Boards {
+            for _, board := range boards {
                 boardMap.Put("@" + board, item)
             }
         }
@@ -79,7 +80,7 @@ func createItem(tasks task.Storage, note bool, args []string) (int, error) {
     tasks = append(tasks, task.Task{
         Id: id,
         Description: strings.Join(description, " "),
-        Boards: boards,
+        Boards: unique(boards),
         Note: note,
         Done: false,
     })
@@ -150,6 +151,7 @@ func EditBoards(tasks task.Storage, args []string) error {
         } else {
             task.Boards = boards
         }
+        task.Boards = unique(task.Boards)
     }
 
     idsDisplay := strings.Join(surround(stringify(ids), style.Muted, style.Reset), ", ")
