@@ -15,6 +15,7 @@ type Task struct {
     Boards []string `json:"boards"`
     Note bool `json:"note"`
     Done bool `json:"complete"`
+    Urgent bool `json:"urgent"`
 }
 
 func (task Task) Print(indent int) {
@@ -35,7 +36,9 @@ func (task Task) Print(indent int) {
 
     description := task.Description
     if !task.Note && task.Done {
-        description = style.Muted + description + style.Reset
+        description = style.Muted + task.Description + style.Reset
+    } else if task.Urgent {
+        description = style.Urgent + task.Description + style.Reset
     }
 
     fmt.Printf("  %s %s  %s\n", id, tick, description)

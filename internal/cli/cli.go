@@ -200,6 +200,32 @@ func Uncomplete(tasks task.Storage, args []string) error {
     return err
 }
 
+func ToggleUrgency(tasks task.Storage, args []string) error {
+    if len(args) == 0 {
+        return nil
+    }
+
+    var ids []int
+    for _, arg := range args {
+        id, err := strconv.Atoi(arg)
+        if err != nil || !tasks.ContainsTask(id) {
+            continue
+        }
+
+        task := tasks.GetTask(id)
+        task.Urgent = !task.Urgent
+        ids = append(ids, id)
+    }
+
+    if len(ids) == 0 {
+        return nil
+    }
+
+    idsDisplay := strings.Join(surround(stringify(ids), style.Muted, style.Reset), ", ")
+    fmt.Printf("Toggled urgency of items [ %s ]\n", idsDisplay)
+    return tasks.Save()
+}
+
 func Delete(tasks task.Storage, args []string) error {
     if len(args) == 0 {
         return nil

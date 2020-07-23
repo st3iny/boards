@@ -37,6 +37,8 @@ func main() {
         cliError = cli.Complete(tasks, cmdArgs)
     } else if args[0] == "u" || args[0] == "uncomplete" {
         cliError = cli.Uncomplete(tasks, cmdArgs)
+    } else if args[0] == "m" || args[0] == "mark" {
+        cliError = cli.ToggleUrgency(tasks, cmdArgs)
     } else if args[0] == "d" || args[0] == "delete" {
         cliError = cli.Delete(tasks, cmdArgs)
     } else if args[0] == "clear" {
@@ -65,6 +67,7 @@ func usage() {
         "boards uncomplete|u ID [ID ...]",
         "boards edit|e ID DESCRIPTION [DESCRIPTION ...]",
         "boards boards|b ID [ID ...] [@BOARD ...]",
+        "boards mark|m ID [ID ...]",
         "boards clear",
         "boards --help|-h",
         "",
