@@ -11,6 +11,7 @@ boards complete|c ID [ID ...]
 boards uncomplete|u ID [ID ...]
 boards edit|e ID DESCRIPTION [DESCRIPTION ...]
 boards boards|b ID [ID ...] [@BOARD ...]
+boards mark|m ID [ID ...]
 boards clear
 boards --help|-h
 
