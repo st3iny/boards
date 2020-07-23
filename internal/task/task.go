@@ -33,5 +33,10 @@ func (task Task) Print(indent int) {
         tick = style.Pending + "☐" + style.Reset
     }
 
-    fmt.Printf("  %s %s  %s\n", id, tick, task.Description)
+    description := task.Description
+    if !task.Note && task.Done {
+        description = style.Muted + description + style.Reset
+    }
+
+    fmt.Printf("  %s %s  %s\n", id, tick, description)
 }
