@@ -114,7 +114,7 @@ func EditBoards(tasks task.Storage, args []string) error {
     deltaMode := false
     var ids []int
     var boards, removeBoards []string
-    for _, arg := range args {
+    for _, arg := range unique(args) {
         if !deltaMode && (strings.HasPrefix(arg, "+") || strings.HasPrefix(arg, "-")) {
             deltaMode = true
         }
@@ -139,7 +139,7 @@ func EditBoards(tasks task.Storage, args []string) error {
     for _, id := range ids {
         task := tasks.GetTask(id)
         if deltaMode {
-            task.Boards = append(task.Boards, boards...)
+            task.Boards = unique(append(task.Boards, boards...))
             for _, remove := range removeBoards {
                 for index, board := range task.Boards {
                     if board == remove {
@@ -151,7 +151,6 @@ func EditBoards(tasks task.Storage, args []string) error {
         } else {
             task.Boards = boards
         }
-        task.Boards = unique(task.Boards)
     }
 
     idsDisplay := strings.Join(surround(stringify(ids), style.Muted, style.Reset), ", ")
@@ -236,7 +235,7 @@ func ToggleUrgency(tasks task.Storage, args []string) error {
     }
 
     var ids []int
-    for _, arg := range args {
+    for _, arg := range unique(args) {
         id, err := strconv.Atoi(arg)
         if err != nil || !tasks.ContainsTask(id) {
             continue
@@ -262,7 +261,7 @@ func Delete(tasks task.Storage, args []string) error {
     }
 
     var ids []int
-    for _, arg := range args {
+    for _, arg := range unique(args) {
         id, err := strconv.Atoi(arg)
         if err != nil || !tasks.ContainsTask(id) {
             continue
