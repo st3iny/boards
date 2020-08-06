@@ -43,6 +43,10 @@ func BoardView(tasks task.Storage) {
     }
     sort.Strings(boards)
 
+    if len(boards) == 0 {
+        return
+    }
+
     indent := len(strconv.FormatInt(int64(tasks.GetHighestId()), 10))
     for _, board := range boards {
         fmt.Printf("\n%s%s%s\n", style.Board, board, style.Reset)
